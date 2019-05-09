@@ -1,0 +1,102 @@
+%==============================================================================
+%------------------------------------------------------------------------------
+%  Workshop handout for Git Internals workshop hosted by the Research Computing
+%    Club at the University of Washington on May 10, 2019
+%
+%  Copyright (C) 2019 Andrew Wildman
+%
+%  The prose in this document is licensed under the Attribution-ShareAlike 4.0
+%  International License (CC BY-SA 4.0). See LICENSE for more details.
+%------------------------------------------------------------------------------
+%==============================================================================
+
+\documentclass[a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, total={7in, 10in}]{geometry}
+
+\usepackage[T1]{fontenc}
+\usepackage{libertine}%% Only as example for the romans/sans fonts
+\usepackage[scaled=0.85]{beramono}
+
+\title{Git Internals Workshop - Useful Commands}
+\date{May 10, 2019}
+
+\begin{document}
+\maketitle
+
+{\Large \texttt{$^*$NIX} Commands}
+
+\begin{tabular}{ l l }
+  \texttt{mkdir \textbf{<path>}} & Creates a directory/folder \\
+  \hline
+  \texttt{ls \textbf{<path>}} & Lists the contents of a directory \\
+  \hline
+  \texttt{find \textbf{<path>} -type f} & Finds all files in a given directory \\
+  \hline
+  \texttt{cat \textbf{<path>}} & Prints contents of a file to \texttt{stdout} \\
+  \hline
+  \texttt{echo \textbf{<message>} > \textbf{<path>}} &
+    Overwrites a file with the given message \\
+  \hline
+\end{tabular}
+
+\vspace{0.5in}
+
+{\Large \texttt{git} Commands}
+
+\begin{tabular}{ p{0.48\textwidth} p{0.48\textwidth} }
+  \texttt{git init} & Creates and populates \texttt{.git/} directory \\
+  \hline
+  \texttt{git hash-object -w \textbf{<path>}} & Saves an object to the Git
+    object store and prints the hash \\
+  \hline
+  \texttt{git cat-file -p \textbf{<object hash>}} & Prints the contents of an
+    object in the Git object store \\
+  \hline
+  \texttt{git cat-file -t \textbf{<object hash>}} & Prints the type of an object
+    in the Git object store \\
+  \hline
+  \texttt{git update-index -{}-add \textbf{<path>}} & Adds a file to the Git
+    index \\
+  \hline
+  \texttt{git ls-files} & Lists the files in the current index \\
+  \hline
+  \texttt{git write-tree} & Saves the index as a tree in the Git object store
+  and prints the hash \\
+  \hline
+  \texttt{echo \textbf{<message>} | git commit-tree \textbf{<tree hash>}} &
+    Saves a commit pointing to a tree in the Git object store and prints the
+    hash \\
+  \hline
+  \texttt{echo \textbf{<message>} | git commit-tree \textbf{<tree hash>} -p
+  \textbf{<commit hash>}} &
+    Saves a commit as above, but with (at least one) parent commit \\
+  \hline
+  \texttt{git log \textbf{<commit hash>}} & Prints all the commits previous to
+    the one specified by the hash \\
+  \hline
+  \texttt{git log \textbf{<commit hash>} -{}-all -{}-decorate -{}-oneline -{}-graph} &
+    Prints the log as a easily human parsable graph \\
+  \hline
+  \texttt{git update-ref refs/heads/\textbf{<branch>} \textbf{<commit hash>}} &
+    Creates a named branched that points at the given commit \\
+  \hline
+  \texttt{git rev-parse \textbf{<branch>}} & Prints the commit hash to which the
+    branch points \\
+  \hline
+  \texttt{git branch} & Lists all the branches in the repository \\
+  \hline
+  \texttt{git symbolic-ref HEAD refs/heads/\textbf{<branch>}} &
+    Sets \texttt{HEAD} to point at the specified branch \\
+  \hline
+  \texttt{git update-ref refs/tags/\textbf{<tag>} \textbf{<object hash or reference>}} &
+    Tags a git object with a lightweight tag \\
+  \hline
+  \texttt{git tag -a \textbf{<tag>} \textbf{<object hash or reference>} -m \textbf{<message>}} &
+    Tags a git object with an annotated tag \\
+  \hline
+\end{tabular}
+
+
+\end{document}
