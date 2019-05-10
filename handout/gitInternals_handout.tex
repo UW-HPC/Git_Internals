@@ -13,13 +13,13 @@
 \documentclass[a4paper]{article}
 
 \usepackage[utf8]{inputenc}
-\usepackage[a4paper, total={7in, 10in}]{geometry}
+\usepackage[a4paper, total={7in, 10.5in}]{geometry}
 
 \usepackage[T1]{fontenc}
 \usepackage{libertine}%% Only as example for the romans/sans fonts
 \usepackage[scaled=0.85]{beramono}
 
-\title{Git Internals Workshop - Useful Commands}
+\title{Git Internals Workshop}
 \date{May 10, 2019}
 
 \begin{document}
@@ -41,11 +41,11 @@
   \hline
 \end{tabular}
 
-\vspace{0.5in}
+\vspace{0.2in}
 
 {\Large \texttt{git} Commands}
 
-\begin{tabular}{ p{0.48\textwidth} p{0.48\textwidth} }
+\begin{tabular}{ p{0.5\textwidth} p{0.4\textwidth} }
   \texttt{git init} & Creates and populates \texttt{.git/} directory \\
   \hline
   \texttt{git hash-object -w \textbf{<path>}} & Saves an object to the Git
@@ -98,5 +98,84 @@
   \hline
 \end{tabular}
 
+\vspace{0.5in}
+
+{\Large Exercises}
+
+\vspace{0.2in}
+
+{\large Git Object Store}
+
+\begin{enumerate}
+  \item Create a new directory and initialize git
+  \item Look inside the \texttt{.git} folder. Make sure you understand its
+		  contents.
+  \item Create a file and put some contents in it.
+  \item Save that file to the git object store. Find it in the git object
+		  database.
+  \item Use a plumbing command to see the contents of the object you just saved.
+		  \textit{Try steps 3-5 several times until you are comfortable saving
+		  files to the database}
+  \item Make a change to a file. Save the changed file to the object database.
+		  Before you find it, what do you expect to see? Were you right?
+  \item \textit{Bonus} Delete a file and recreate it from the git object store.
+  \item \textit{Bonus} Change the name of a file, and save it to the object
+		  database. Before you find it, what do you expect to see? Were you
+		  right?
+\end{enumerate}
+
+\vspace{0.2in}
+
+{\large Blobs and Trees}
+
+\begin{enumerate}
+  \item Add a file from part 1 to the index.
+  \item Find the index file in the \texttt{git} folder.
+  \item Check the contents of the index with a plumbing command. Confirm the
+		  contents with \texttt{git status}.
+  \item Save the index as a tree in the object database. Find the file in the
+		  database.
+  \item Look at the contents of the tree object. Make sure you understand each
+		  line. \textit{Repeat 1-5 until you are comfortable saving trees to the
+		  database.}
+  \item Change a file and add it to the index. Save the tree to the object
+		  database. Before you look at the contents of the tree, what do you
+		  expect to see? Were you right?
+  \item Save a subdirectory with files to your database. Inspect both the root
+		  tree and the subtree. Make sure you understand each of the trees'
+		  contents.
+\end{enumerate}
+
+\vspace{0.2in}
+
+{\large Commits}
+
+\begin{enumerate}
+  \item Create a commit from a tree in part 2.
+  \item Find your commit object in the object database.
+  \item Check the contents of the commit you created. \textit{Repeat 1-3 to
+          create a linear history}.
+  \item Check the commit history with \texttt{git log}.
+  \item \textit{Bonus} Create a second commit off your initial commit. Create a
+		  merge commit from your two ''branches.``
+\end{enumerate}
+
+\vspace{0.2in}
+
+{\large References}
+
+\begin{enumerate}
+  \item Look inside your \texttt{.git/refs} directory. Check that there are two
+		  subdirectories.
+  \item Take a commit from part 3 and create the ''master`` branch.
+  \item Find the branch in the \texttt{.git/refs} directory.
+  \item Create a new commit and the check that master has not changed. Advance
+		  master to the newest commit.
+  \item Create a second branch. Add some more commits, and advance this branch
+		  to the newest commit.
+  \item Create a lightweight tag on the most recent commit.
+  \item Create an annotated tag on the same commit referred to by master.
+  \item \textit{Bonus} Try to delete a branch using only file manipulation.
+\end{enumerate}
 
 \end{document}
