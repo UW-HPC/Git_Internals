@@ -1,0 +1,264 @@
+%==============================================================================
+%------------------------------------------------------------------------------
+%  Workshop handout for Git Internals workshop hosted by the Research Computing
+%    Club at the University of Washington on May 10, 2019
+%
+%  Copyright (C) 2019 Andrew Wildman
+%
+%  The prose in this document is licensed under the Attribution-ShareAlike 4.0
+%  International License (CC BY-SA 4.0). See LICENSE for more details.
+%------------------------------------------------------------------------------
+%==============================================================================
+
+\documentclass[a4paper,12pt]{article}
+
+\setlength\parindent{0pt}
+
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, total={7in, 10.5in}]{geometry}
+
+\usepackage[T1]{fontenc}
+\usepackage{libertine}%% Only as example for the romans/sans fonts
+\usepackage[scaled=0.85]{beramono}
+
+\begin{document}
+
+\section*{Introduction}
+
+\section*{Git object store}
+
+\texttt{mkdir workshop\_repo\\
+cd workshop\_repo\\
+git init\\
+ls .git}
+
+\vspace{0.1in}
+
+This is where we talk about the contents of the .git directory. As a reminder:
+\begin{itemize}
+  \item HEAD - Our location in the repo
+  \item config - Repo specific information
+  \item description - GitWeb specific file --- ignore
+  \item hooks - Scripts that run on events (e.g. committing, pushing, etc.)
+  \item info - Holds the exclude file, which is nice
+  \item objects - Has two empty directories, but we'll work with it in a minute
+  \item refs - Has two more empty directories, but we'll see it again
+\end{itemize}
+
+\vspace{0.1in}
+
+\texttt{echo 'echo "Hello World!"' > hello.sh\\
+git hash-object -w hello.sh\\
+find .git/objects -type f}
+
+\vspace{0.1in}
+
+This is where we discuss the concept of a content-addressable filesystem.
+
+\texttt{git hash-object -w hello.sh\\
+find .git/objects -type f}
+
+\vspace{0.1in}
+
+Now we will get the contents of those files
+
+\vspace{0.1in}
+
+\texttt{git cat-file -p <hash>}
+
+\vspace{0.1in}
+
+And we can show how to restore files
+
+\vspace{0.1in}
+
+\texttt{rm hello.sh\\
+git cat-file -p <hash> > hello.sh\\
+cat hello.sh}
+
+\vspace{0.1in}
+
+Now let's make something a bit more complicated
+
+\vspace{0.1in}
+
+\texttt{mkdir src\\
+echo '\#!/usr/bin/env python' > src/hello.py\\
+echo 'print("Hello World")' >> src/hello.py\\
+chmod +x src/hello.py\\
+git hash-object src/hello.py\\
+find .git/objects -type f}
+
+\section*{Blobs and trees}
+
+\texttt{git update-index --add hello.sh\\
+ls .git\\
+git ls-files\\
+git status}
+
+\vspace{0.1in}
+
+Talk about permanent snapshots
+
+\vspace{0.1in}
+
+\texttt{git write-tree\\
+find .git/objects -type f\\
+git cat-file -p <hash>\\
+git cat-file -t <hash>}
+
+\vspace{0.1in}
+
+Talk about how trees can point to blobs
+
+\vspace{0.1in}
+
+\texttt{git update-index --add src/hello.py\\
+git ls-files\\
+git write-tree\\
+git cat-file -p <hash>\\
+git cat-file -p <subdir hash>}
+
+\vspace{0.1in}
+
+Show tree structure
+
+\section*{Commits}
+
+\texttt{echo "Initial commit" | git commit-tree <hash>\\
+git cat-file -t <hash>\\
+find .git/objects -type f\\
+git cat-file -p <hash>}
+
+\vspace{0.1in}
+
+Talk about the contents of a commit. Show commit structure slide.
+
+\vspace{0.1in}
+
+\texttt{mv src src\_moved\\
+git update-index --add src\_moved/hello.py\\
+git update-index --remove src/hello.py\\
+git write-tree\\
+echo "Moved src" | git commit-tree <tree hash> -p <other commit hash>\\
+git cat-file -p <hash>}
+
+\vspace{0.1in}
+
+Talk about commit parents. Show new commit structure slide.
+
+\vspace{0.1in}
+
+\texttt{git log <commit hash>\\
+find .git/objects -type f}
+
+\vspace{0.1in}
+
+Talk about blob persistence and show total repo structure slide.
+
+Now let's make a merge commit.
+
+\vspace{0.1in}
+
+\texttt{mv src\_moved src\\
+git update-index --add src/hello.py\\
+git update-index --remove src\_moved/hello.py\\
+mv hello.sh hi.sh\\
+git update-index --add hi.sh\\
+git update-index --remove hello.sh\\
+git write-tree
+echo "Renamed hello.sh" | git commit-tree <tree hash> -p <root hash>\\
+mv src src\_moved\\
+git update-index --add src\_moved/hello.py\\
+git update-index --remove src/hello.py\\
+git write-tree\\
+echo "Merged histories" | git commit-tree <tree hash> -p <hash p1> -p <hash p2>\\
+git log <hash>\\
+git log <hash> --decorate --oneline --graph}
+
+\vspace{0.1in}
+
+Show the merge commit slide.
+
+\section*{References}
+
+\texttt{ls .git/refs\\
+find .git/refs -type f\\
+git update-ref refs/heads/master <newest hash>\\
+find .git/refs -type f\\
+cat .git/refs/heads/master}
+
+\vspace{0.1in}
+
+We can use this reference instead of a hash anywhere
+
+\vspace{0.1in}
+
+\texttt{git cat-file -p master\\
+git log master\\
+git rev-parse master}
+
+\vspace{0.1in}
+
+Now let's add another branch to show the branch we already merged
+
+\vspace{0.1in}
+
+\texttt{git update-ref refs/heads/dev <branch commit>\\
+find .git/refs -type f\\
+git branch}
+
+\vspace{0.1in}
+
+Talk about the special reference, HEAD
+
+\vspace{0.1in}
+
+\texttt{cat .git/HEAD}
+
+\vspace{0.1in}
+
+Now let's switch branches.
+
+\vspace{0.1in}
+
+\texttt{git symbolic-ref HEAD refs/heads/dev\\
+git branch}
+
+\vspace{0.1in}
+
+Show the branches slide. What about the tags file?
+
+\vspace{0.1in}
+
+\texttt{git update-ref refs/tags/v0.0.1\_rc1 <moved src hash>\\
+find .git/refs -type f\\
+cat .git/refs/tags/v0.0.1\_rc1\\
+git cat-file v0.0.1\_rc1}
+
+\vspace{0.1in}
+
+Talk about the lack of context for these tags
+
+\vspace{0.1in}
+
+\texttt{git tag -a v0.0.1 <merge hash> -m 'Released at the workshop'\\
+git cat-file -p v0.0.1\\
+find .git/objects -type f}
+
+\vspace{0.1in}
+
+Show the tags and branches slide.
+
+\section*{Example: Rebase}
+\begin{enumerate}
+  \item Talk to the audience about the steps necessary to do a manual rebase
+  \item Show them the source that can do it
+\end{enumerate}
+
+\section*{Audience choice}
+
+Whatever they want to ask about - This is a possibility instead of the manual
+rebase, especially if there is no time.
+
+\end{document}
