@@ -16,3 +16,5 @@
 *-converted-to.*
 
 *$*.ppt*
+
+*__pycache__
